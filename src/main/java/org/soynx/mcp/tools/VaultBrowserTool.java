@@ -52,6 +52,18 @@ public class VaultBrowserTool {
         return sb.toString().trim();
     }
 
+    @Tool(description = "Get the complete file tree of the entire vault in one call, formatted like 'tree' output. Use this first to understand the vault structure before navigating into specific folders.")
+    public String getVaultFileTree() {
+        log.info("[getVaultFileTree] Fetching full recursive file tree");
+        String result = vaultService.getFullFileTree();
+        if (result.startsWith("ERROR:")) {
+            log.warn("[getVaultFileTree] Failed: {}", result);
+        } else {
+            log.debug("[getVaultFileTree] Tree returned successfully");
+        }
+        return result;
+    }
+
     @Tool(description = "Get the full markdown content of a specific note by its file path.")
     public String getNoteContent(
             @ToolParam(description = "File path relative to vault root, e.g. 'Projects/MyProject.md'") String filePath) {
