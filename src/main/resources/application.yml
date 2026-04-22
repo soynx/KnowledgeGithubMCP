@@ -1,0 +1,29 @@
+spring:
+  ai:
+    mcp:
+      server:
+        name: KnowledgeGithubMCP
+        version: 1.0.0
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.mcp.server.autoconfigure.McpWebMvcServerAutoConfiguration
+      - org.springframework.ai.mcp.server.autoconfigure.McpServerAutoConfiguration
+
+server:
+  port: 8080
+
+github:
+  token: ${GITHUB_TOKEN}
+  repository: ${GITHUB_REPOSITORY}
+  vault-root: ${VAULT_ROOT:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,mappings
+
+logging:
+  level:
+    org.soynx.mcp: INFO
+    org.kohsuke.github: WARN
