@@ -12,6 +12,7 @@ A **read-only Spring Boot MCP Server** that exposes a private notes vault hosted
 | `getNoteContent`      | Fetch the full markdown content of a note by its file path                      |
 | `getNoteMetadata`     | Retrieve file metadata: size, SHA, and direct GitHub URL                        |
 | `searchNotes`         | Full-text search across all notes via GitHub Code Search                        |
+| `getVaultFileTree`    | Lists all files and it paths of the whole vault                                 |
 | `searchByTag`         | Find all notes that contain a specific tag (e.g. `#todo`)                       |
 | `getOutgoingLinks`    | Extract all `[[wiki-links]]` from a note and resolve which ones exist           |
 | `getIncomingLinks`    | Find all notes that link back to a given note (backlinks)                       |
