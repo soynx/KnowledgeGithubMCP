@@ -147,6 +147,10 @@ public class VaultService {
         sb.append(rootLabel).append("\n");
         renderNode(sb, "", "", dirs, filePaths);
         sb.append("\n").append(paths.size()).append(" file(s) total");
+        sb.append("\n\n\n\n").append("complete paths:");
+        for (String path : paths) {
+            sb.append("\n").append(path);
+        }
         return sb.toString();
     }
 
