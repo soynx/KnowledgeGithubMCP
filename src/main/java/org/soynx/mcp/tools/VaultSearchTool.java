@@ -56,7 +56,8 @@ public class VaultSearchTool {
             Example — user asks about 'java logback': use ['logback', 'slf4j', 'log4j', 'logging', 'appender', \
             'logger', 'java', 'log'].
             The bigger the list the fewer relevant notes are missed. Maximum 10 terms.
-            Results show whether each match was found in the content or the file path.""")
+            Results show whether each match was found in the content or the file path.
+            To get a feeling about the folder structure and what notes could be releated/life in the same folder, use the 'getVaultFileTree' tool.""")
     public String searchNotes(
             @ToolParam(description = "List of search terms (OR logic). Use many synonyms and related concepts for best recall. Max 10 terms.") List<String> queries,
             @ToolParam(description = "Maximum number of results to return. Default 70. Set higher for broader searches.") int maxResults) {
