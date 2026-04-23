@@ -76,6 +76,7 @@ curl http://localhost:8080/actuator/health
 3. Enter the URL: `https://your-domain.com/mcp`
 4. No OAuth is required — KnowledgeGithubMCP authenticates to GitHub internally using the PAT
 
+> Note: when updating the server, it is recommended to disconnect and reconnect the MCP server inside claude settings
 ---
 
 ## MCP Server Structure
