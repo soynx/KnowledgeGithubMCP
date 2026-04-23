@@ -4,6 +4,8 @@ A **read-only Spring Boot MCP Server** that exposes a private notes vault hosted
 
 
 > [!IMPORTANT]
+> CONNECTION WARNING CAN BE IGNORED WHEN SETTING UP IN CLAUDE
+
 > currently *(as of 23.04.2026 / v.1.2.0)*, when connecting claude to this server, it will most likely forward you to a claude website saying `"Couldn't connect"`.
 > It will ask to switch to the claude desktop app again. After switching to the app, it will again show a warning in the top right corner, saying it can`t connect to the server.
 > **THE SERVER WORKS REGARDLESS, THESE MESSAGES CAN SAVELY BE IGNORED!**
