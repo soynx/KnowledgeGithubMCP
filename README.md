@@ -2,6 +2,15 @@
 
 A **read-only Spring Boot MCP Server** that exposes a private notes vault hosted on GitHub to Claude via the [Model Context Protocol](https://modelcontextprotocol.io). Claude can browse, search, and navigate the vault's knowledge graph without ever having direct access to the repository or credentials.
 
+
+> [!IMPORTANT]
+> currently *(as of 23.04.2026 / v.1.2.0)*, when connecting claude to this server, it will most likely forward you to a claude website saying `"Couldn't connect"`.
+> It will ask to switch to the claude desktop app again. After switching to the app, it will again show a warning in the top right corner, saying it can`t connect to the server.
+> **THE SERVER WORKS REGARDLESS, THESE MESSAGES CAN SAVELY BE IGNORED!**
+> I don't know if this is an issue with my code (most likely), my network setup or just because antropic just newly release the streamable-http MCP-Server feature.
+> **I am on this bug and will fix it as soon as i can!**
+
+
 ---
 
 ## Features
