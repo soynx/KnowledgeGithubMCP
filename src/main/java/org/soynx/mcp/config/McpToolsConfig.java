@@ -48,8 +48,12 @@ public class McpToolsConfig {
         List<McpServerFeatures.SyncToolSpecification> specs = Arrays.stream(vaultTools.getToolCallbacks())
                 .map(tc -> {
                     var def = tc.getToolDefinition();
+                    String schema = def.inputSchema();
+                    if (schema == null || schema.isBlank() || schema.equals("{}")) {
+                        schema = "{\"type\":\"object\",\"properties\":{}}";
+                    }
                     McpSchema.Tool tool = new McpSchema.Tool(
-                            def.name(), def.description(), def.inputSchema());
+                            def.name(), def.description(), schema);
                     return new McpServerFeatures.SyncToolSpecification(
                             tool,
                             null,
