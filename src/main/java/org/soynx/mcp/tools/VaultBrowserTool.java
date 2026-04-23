@@ -18,9 +18,13 @@ public class VaultBrowserTool {
 
     private final VaultService vaultService;
 
-    @Tool(description = "List all files and folders at a given path in the KnowledgeGithubMCP vault. Use empty string for root.")
+    @Tool(description = """
+            List the immediate files and folders inside a specific vault directory.
+            Use this to explore a known folder's contents in detail (includes file sizes).
+            For a full vault overview use getVaultFileTree instead — it is cheaper and shows everything at once.
+            Pass an empty string to list the vault root.""")
     public String listVaultContents(
-            @ToolParam(description = "Path to list, e.g. 'Projects' or 'Area/Work'. Use empty string for vault root.") String path) {
+            @ToolParam(description = "Folder path relative to vault root, e.g. 'Projects' or 'Areas/Work'. Pass empty string for the vault root.") String path) {
         String effectivePath = path == null ? "" : path;
         log.info("[listVaultContents] path='{}'", effectivePath.isBlank() ? "/" : effectivePath);
 
@@ -52,7 +56,11 @@ public class VaultBrowserTool {
         return sb.toString().trim();
     }
 
-    @Tool(description = "Get the complete file tree of the entire vault in one call, formatted like 'tree' output. Use this first to understand the vault structure before navigating into specific folders.")
+    @Tool(description = """
+            Get every file path in the entire vault as compact JSON: {"total": N, "files": ["path/to/note.md", ...]}.
+            Call this first whenever you don't know where to look — the full sorted path list reveals the folder \
+            structure and lets you identify relevant files before reading them.
+            The paths returned are the exact values to pass into getNoteContent, getOutgoingLinks, getNoteMetadata, etc.""")
     public String getVaultFileTree() {
         log.info("[getVaultFileTree] Fetching full recursive file tree");
         String result = vaultService.getFullFileTree();
@@ -64,9 +72,12 @@ public class VaultBrowserTool {
         return result;
     }
 
-    @Tool(description = "Get the full markdown content of a specific note by its file path.")
+    @Tool(description = """
+            Fetch the complete raw markdown content of a note, including frontmatter, tags, body text, and [[wiki-links]].
+            Requires an exact file path — obtain it from getVaultFileTree or from searchNotes results.
+            Use this when you need to read the full content of a specific note.""")
     public String getNoteContent(
-            @ToolParam(description = "File path relative to vault root, e.g. 'Projects/MyProject.md'") String filePath) {
+            @ToolParam(description = "Exact file path relative to vault root, e.g. 'Projects/MyProject.md'. Must include the .md extension.") String filePath) {
         log.info("[getNoteContent] filePath='{}'", filePath);
         if (filePath == null || filePath.isBlank()) {
             log.warn("[getNoteContent] Called with empty filePath");
@@ -82,9 +93,12 @@ public class VaultBrowserTool {
         return content;
     }
 
-    @Tool(description = "Get metadata for a note: last modified date, file size, and direct GitHub URL.")
+    @Tool(description = """
+            Get file metadata for a note: name, path, size, SHA hash, and direct GitHub HTML/download URLs.
+            Use this when you need the GitHub link to share or verify a note, or to check its size before reading.
+            Does NOT return note content — use getNoteContent for that.""")
     public String getNoteMetadata(
-            @ToolParam(description = "File path relative to vault root, e.g. 'Projects/MyProject.md'") String filePath) {
+            @ToolParam(description = "Exact file path relative to vault root, e.g. 'Projects/MyProject.md'. Must include the .md extension.") String filePath) {
         log.info("[getNoteMetadata] filePath='{}'", filePath);
         if (filePath == null || filePath.isBlank()) {
             log.warn("[getNoteMetadata] Called with empty filePath");

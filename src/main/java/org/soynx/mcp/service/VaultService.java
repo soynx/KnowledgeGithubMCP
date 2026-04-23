@@ -102,12 +102,28 @@ public class VaultService {
 
     public String getFullFileTree() {
         log.debug("Fetching recursive file tree from GitHub for repo '{}'", repository.getFullName());
+        List<String> paths = getAllFilePaths();
+        if (paths.isEmpty()) {
+            return "ERROR: Could not retrieve file tree or vault is empty.";
+        }
+        log.debug("File tree fetched: {} file(s)", paths.size());
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"total\":").append(paths.size()).append(",\"files\":[");
+        for (int i = 0; i < paths.size(); i++) {
+            sb.append("\"").append(paths.get(i).replace("\"", "\\\"")).append("\"");
+            if (i < paths.size() - 1) sb.append(",");
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
+
+    public List<String> getAllFilePaths() {
+        log.debug("Fetching all file paths from GitHub tree for repo '{}'", repository.getFullName());
         try {
             GHTree tree = repository.getTreeRecursive("HEAD", 1);
             String prefix = (vaultRoot != null && !vaultRoot.isBlank())
                     ? vaultRoot.stripTrailing() + "/" : "";
-
-            List<String> paths = tree.getTree().stream()
+            return tree.getTree().stream()
                     .filter(e -> "blob".equals(e.getType()))
                     .map(GHTreeEntry::getPath)
                     .filter(p -> prefix.isEmpty() || p.startsWith(prefix))
@@ -115,79 +131,14 @@ public class VaultService {
                     .filter(p -> !p.isBlank())
                     .sorted()
                     .toList();
-
-            log.debug("File tree fetched: {} files (prefix='{}')", paths.size(), prefix);
-            String rootLabel = prefix.isEmpty() ? "/" : vaultRoot;
-            return renderTree(paths, rootLabel);
         } catch (IOException e) {
-            log.error("Failed to fetch file tree: {}", e.getMessage(), e);
-            return buildIoError(e, "fetch file tree");
-        }
-    }
-
-    private String renderTree(List<String> paths, String rootLabel) {
-        // Build node map: dir path -> sorted child names (dirs first, then files)
-        java.util.TreeMap<String, java.util.TreeSet<String>> dirs = new java.util.TreeMap<>();
-        java.util.Set<String> filePaths = new java.util.HashSet<>(paths);
-
-        dirs.put("", new java.util.TreeSet<>());
-        for (String path : paths) {
-            String[] parts = path.split("/");
-            StringBuilder current = new StringBuilder();
-            for (int i = 0; i < parts.length; i++) {
-                String parent = current.toString();
-                if (i > 0) current.append("/");
-                current.append(parts[i]);
-                dirs.computeIfAbsent(parent, k -> new java.util.TreeSet<>()).add(current.toString());
-                if (i < parts.length - 1) dirs.computeIfAbsent(current.toString(), k -> new java.util.TreeSet<>());
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(rootLabel).append("\n");
-        renderNode(sb, "", "", dirs, filePaths);
-        sb.append("\n").append(paths.size()).append(" file(s) total");
-        sb.append("\n\n\n\n").append("complete paths: [");
-        for (String path : paths) {
-            sb.append("; ").append(path);
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
-    private void renderNode(StringBuilder sb, String node, String indent,
-                            java.util.TreeMap<String, java.util.TreeSet<String>> dirs,
-                            java.util.Set<String> files) {
-        java.util.TreeSet<String> children = dirs.getOrDefault(node, new java.util.TreeSet<>());
-        // Sort: directories first, then files
-        List<String> sorted = children.stream()
-                .sorted(java.util.Comparator
-                        .comparingInt((String c) -> dirs.containsKey(c) ? 0 : 1)
-                        .thenComparing(c -> c.substring(c.lastIndexOf('/') + 1)))
-                .toList();
-
-        for (int i = 0; i < sorted.size(); i++) {
-            String child = sorted.get(i);
-            boolean last = (i == sorted.size() - 1);
-            String name = child.substring(child.lastIndexOf('/') + 1);
-            boolean isDir = dirs.containsKey(child);
-
-            sb.append(indent).append(last ? "└── " : "├── ").append(name);
-            if (isDir) sb.append("/");
-            sb.append("\n");
-
-            if (isDir) {
-                renderNode(sb, child, indent + (last ? "    " : "│   "), dirs, files);
-            }
+            log.error("Failed to fetch file paths: {}", e.getMessage(), e);
+            return Collections.emptyList();
         }
     }
 
     public GHRepository getRepository() {
         return repository;
-    }
-
-    public String getRepositoryFullName() {
-        return repository.getFullName();
     }
 
     private String buildIoError(IOException e, String action) {

@@ -28,9 +28,12 @@ public class VaultGraphTool {
 
     private final VaultService vaultService;
 
-    @Tool(description = "Get all wiki-links [[...]] referenced in a specific note in the KnowledgeGithubMCP vault.")
+    @Tool(description = """
+            Extract all [[wiki-links]] from a note and verify whether each linked note exists in the vault.
+            Each link is returned as [EXISTS] with its resolved path, or [BROKEN] if the target note was not found.
+            Use this to explore what a note connects to and to follow the knowledge graph outward from a starting note.""")
     public String getOutgoingLinks(
-            @ToolParam(description = "File path relative to vault root, e.g. 'Projects/MyProject.md'") String filePath) {
+            @ToolParam(description = "Exact file path relative to vault root, e.g. 'Projects/MyProject.md'. Must include the .md extension.") String filePath) {
         log.info("[getOutgoingLinks] filePath='{}'", filePath);
 
         String content = vaultService.getFileContent(filePath);
@@ -66,9 +69,12 @@ public class VaultGraphTool {
         return sb.toString().trim();
     }
 
-    @Tool(description = "Find all notes that link TO a specific note (backlinks).")
+    @Tool(description = """
+            Find all notes that contain a [[wiki-link]] pointing to the given note — i.e. backlinks / incoming links.
+            Use this to discover everything in the vault that references a particular topic or note.
+            Pass the note name WITHOUT the .md extension and WITHOUT any folder path — e.g. 'MyProject', not 'Projects/MyProject.md'.""")
     public String getIncomingLinks(
-            @ToolParam(description = "Note name without extension, e.g. 'MyProject'") String noteName) {
+            @ToolParam(description = "Note name only, without folder path and without .md extension. Example: 'MyProject' or 'Kubernetes'.") String noteName) {
         log.info("[getIncomingLinks] noteName='{}'", noteName);
 
         if (noteName == null || noteName.isBlank()) {
@@ -106,9 +112,13 @@ public class VaultGraphTool {
         return "Notes that link to '[[" + noteName + "]]' (" + paths.size() + "):\n\n" + String.join("\n", paths);
     }
 
-    @Tool(description = "List notes modified in the last N days, sorted by most recent first.")
+    @Tool(description = """
+            List all .md notes that were changed in the last N days, sorted by most recent first with timestamps.
+            Based on git commit history — reflects actual edits, not just file metadata.
+            Use this to find what the user has been actively working on recently.
+            Valid range: 1–365 days.""")
     public String getRecentlyModified(
-            @ToolParam(description = "Number of days to look back, e.g. 7") int days) {
+            @ToolParam(description = "Number of days to look back. Use 7 for the past week, 30 for the past month. Range: 1–365.") int days) {
         log.info("[getRecentlyModified] days={}", days);
 
         if (days < 1 || days > 365) {
