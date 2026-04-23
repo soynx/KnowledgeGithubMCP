@@ -6,17 +6,17 @@ A **read-only Spring Boot MCP Server** that exposes a private notes vault hosted
 
 ## Features
 
-| Tool                  | Description                                                                     |
-|-----------------------|---------------------------------------------------------------------------------|
-| `listVaultContents`   | List all files and folders at any path in the vault (use empty string for root) |
-| `getNoteContent`      | Fetch the full markdown content of a note by its file path                      |
-| `getNoteMetadata`     | Retrieve file metadata: size, SHA, and direct GitHub URL                        |
-| `searchNotes`         | Full-text search across all notes via GitHub Code Search                        |
-| `getVaultFileTree`    | Lists all files and it paths of the whole vault                                 |
-| `searchByTag`         | Find all notes that contain a specific tag (e.g. `#todo`)                       |
-| `getOutgoingLinks`    | Extract all `[[wiki-links]]` from a note and resolve which ones exist           |
-| `getIncomingLinks`    | Find all notes that link back to a given note (backlinks)                       |
-| `getRecentlyModified` | List notes modified in the last N days, sorted by most recent first             |
+| Tool                  | Description                                                                                                     |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------|
+| `listVaultContents`   | List all files and folders at any path in the vault (use empty string for root)                                 |
+| `getNoteContent`      | Fetch the full markdown content of a note by its file path                                                      |
+| `getNoteMetadata`     | Retrieve file metadata: size, SHA, and direct GitHub URL                                                        |
+| `searchNotes`         | Search notes by content AND file path using a list of terms — any match returns the note (OR logic, path-aware) |
+| `getVaultFileTree`    | Returns the complete vault file list as compact JSON: `{"total": N, "files": ["path/a.md", ...]}`               |
+| `searchByTag`         | Find all notes containing any of the specified Obsidian tags — accepts a list for broader recall (OR logic)     |
+| `getOutgoingLinks`    | Extract all `[[wiki-links]]` from a note and resolve which ones exist                                           |
+| `getIncomingLinks`    | Find all notes that link back to a given note (backlinks)                                                       |
+| `getRecentlyModified` | List notes modified in the last N days, sorted by most recent first                                             |
 
 All tools return plain strings. Errors are surfaced as descriptive messages — no exceptions are ever propagated to Claude.
 
@@ -145,12 +145,12 @@ KnowledgeGithubMcpApplication   ← Spring Boot entry point
 ## Example Claude Prompts
 
 ```
-"Was habe ich in meinen Notizen über Kubernetes geschrieben?"
-"Zeig mir alle Notizen mit dem Tag #todo"
-"Was verlinkt auf meine Notiz 'ProjectX'?"
-"Welche Notizen habe ich in den letzten 7 Tagen geändert?"
-"Zeig mir den Inhalt von Projects/MeinProjekt.md"
-"Was sind alle Verlinkungen in meiner Daily Note von heute?"
+"What have I written in my notes about Kubernetes?"
+"Show me all notes tagged with #todo"
+"What links to my note 'ProjectX'?"
+"Which notes have I changed in the last 7 days?"
+"Show me the content of Projects/MyProject.md"
+"What are all the links in my daily note from today?"
 ```
 
 ---

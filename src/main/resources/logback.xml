@@ -4,7 +4,7 @@
     <property name="DEFAULT_PATTERN"
           value="%-90(%d{(yyyy-MM-dd -- HH:mm:ss.SSS)} %+10logger{10}.%-10M) [ %-5level ]  %msg%n"/>
 
-    <!-- Log level from environment variable, default to INFO -->
+    <!-- Log level from environment variable, default to WARN -->
     <property name="LOG_LEVEL" value="${LOG_LEVEL:-WARN}"/>
 
     <!-- Console appender -->
@@ -28,8 +28,14 @@
         </encoder>
     </appender>
 
-    <!-- Root logger with environment-driven level -->
-    <root level="${LOG_LEVEL}">
+    <!-- Application code: uses the configured LOG_LEVEL (TRACE / DEBUG / INFO / WARN / ERROR) -->
+    <logger name="org.soynx.mcp" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Everything else (Spring, Kohsuke GitHub API, etc.) stays at INFO regardless of LOG_LEVEL -->
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
