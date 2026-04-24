@@ -22,7 +22,7 @@ import java.io.IOException;
 @Configuration
 public class GitHubConfig {
 
-    @Value("${github.token}")
+    @Value("${github.token:}")
     private String token;
 
     @Value("${github.repository}")
@@ -37,8 +37,11 @@ public class GitHubConfig {
     @Bean
     public GitHub gitHubClient() throws IOException {
         log.debug("[GitHubConfig] Initializing GitHub client for repository: {}", repository);
-        GitHub client = new GitHubBuilder().withOAuthToken(token).build();
-        log.info("[GitHubConfig] GitHub client initialized successfully");
+        GitHub client = (token == null || token.isBlank())
+                ? GitHub.connectAnonymously()
+                : new GitHubBuilder().withOAuthToken(token).build();
+        log.info("[GitHubConfig] GitHub client initialized ({} access)",
+                (token == null || token.isBlank()) ? "anonymous" : "authenticated");
         return client;
     }
 

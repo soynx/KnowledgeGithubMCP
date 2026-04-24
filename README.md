@@ -130,7 +130,7 @@ KnowledgeGithubMcpApplication   ← Spring Boot entry point
 
 | Environment Variable | Required | Description                                                                         |
 |----------------------|----------|-------------------------------------------------------------------------------------|
-| `GITHUB_TOKEN`       | Yes      | Read-only GitHub PAT (`repo` scope)                                                 |
+| `GITHUB_TOKEN`       | No       | Read-only GitHub PAT (`repo` scope)                                                 |
 | `GITHUB_REPOSITORY`  | Yes      | Repository in `username/repo-name` format                                           |
 | `VAULT_ROOT`         | No       | Subfolder within the repo where the vault lives. Leave empty for repo root.         |
 | `LOG_LEVEL`          | No       | Root log level. Default: `WARN`. Options: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR` |
@@ -142,7 +142,7 @@ KnowledgeGithubMcpApplication   ← Spring Boot entry point
 - The GitHub PAT should have the minimum required scope: `repo` (read) for private repositories, or no scope at all for public ones
 - KnowledgeGithubMCP itself has no authentication layer — secure it at the network/reverse-proxy level
 
-### How to generate readonly token:
+### How to generate readonly token (only required for private GitHub Repos):
 - open github.com
 - Profile -> Settings -> Developer Settings -> Personal access tokens - Fine-grained tokens
 - Press "Generate new token"
