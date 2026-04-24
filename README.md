@@ -122,13 +122,14 @@ vault/
 - A GitHub repository containing your notes or documentation
 - A read-only GitHub PAT (only required for **private** repositories)
 
-### 1. Clone the repository
+### 1. Get the compose file
 
 ```bash
-git clone https://github.com/soynx/KnowledgeGithubMCP.git
-cd KnowledgeGithubMCP
+curl -O https://raw.githubusercontent.com/soynx/KnowledgeGithubMCP/main/docker-compose.yml.sample
 cp docker-compose.yml.sample docker-compose.yml
 ```
+
+> No need to clone the repository — the Docker image is published on [GitHub Container Registry](https://ghcr.io/soynx/knowledge-github-mcp).
 
 ### 2. Configure
 

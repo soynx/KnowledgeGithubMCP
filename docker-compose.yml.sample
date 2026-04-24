@@ -1,6 +1,6 @@
 services:
   knowledge-github-mcp:
-    build: .
+    image: ghcr.io/soynx/knowledge-github-mcp:latest
     ports:
       - "8080:8080"
     environment:
