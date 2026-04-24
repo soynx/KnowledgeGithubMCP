@@ -4,18 +4,46 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # GitHub Personal Access Token (read-only, repo scope)
-      - GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 
-      # Your Obsidian vault repository in "username/repo-name" format
-      - GITHUB_REPOSITORY=youruser/obsidian-vault
+      # ---------------------------------------------------------------------------
+      # OPTION A: Single-repo setup (legacy / simple)
+      # The server exposes one repo at http://host:8080/mcp
+      # ---------------------------------------------------------------------------
+      # - GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx    # leave empty for public repos
+      # - GITHUB_REPOSITORY=youruser/obsidian-vault
+      # - VAULT_ROOT=                              # optional subfolder path
 
-      # Optional: subfolder within the repo where the vault lives.
-      # Leave empty if the vault is at the repository root.
-      - VAULT_ROOT=
+      # ---------------------------------------------------------------------------
+      # OPTION B: Multi-repo setup
+      # Define any number of named repos, then group them into named endpoints.
+      # ---------------------------------------------------------------------------
 
-      # SLF4J Loglevel (TRACE, DEBUG, INFO, WARN, ERROR)
+      # --- Named repos ---
+      # REPOS__<KEY>__ORIGIN  required   owner/repo-name
+      # REPOS__<KEY>__TOKEN   optional   GitHub PAT (leave empty for public repos)
+      # REPOS__<KEY>__ROOT    optional   subfolder path within the repo
+      - REPOS__VAULT__ORIGIN=youruser/obsidian-vault
+      - REPOS__VAULT__TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+      - REPOS__VAULT__ROOT=
+
+      - REPOS__DOCS__ORIGIN=youruser/docs
+      - REPOS__DOCS__TOKEN=
+      - REPOS__DOCS__ROOT=
+
+      # --- Named setups (each becomes a separate MCP endpoint) ---
+      # SETUP__<KEY>__PATH     MCP endpoint path, e.g. /notes/mcp
+      # SETUP__<KEY>__CONTENT  comma-separated list of repo keys defined above
+      - SETUP__PERSONAL__PATH=/personal/mcp
+      - SETUP__PERSONAL__CONTENT=vault,docs
+
+      - SETUP__VAULTONLY__PATH=/vault/mcp
+      - SETUP__VAULTONLY__CONTENT=vault
+
+      # ---------------------------------------------------------------------------
+      # Logging
+      # ---------------------------------------------------------------------------
       - LOG_LEVEL=INFO
+
     restart: unless-stopped
 
     # OPTIONAL: mount logs

@@ -3,7 +3,7 @@ spring:
     mcp:
       server:
         name: KnowledgeGithubMCP
-        version: 1.0.0
+        version: 2.0.0
   autoconfigure:
     exclude:
       - org.springframework.ai.mcp.server.autoconfigure.McpWebMvcServerAutoConfiguration
@@ -14,7 +14,7 @@ server:
 
 github:
   token: ${GITHUB_TOKEN:}
-  repository: ${GITHUB_REPOSITORY}
+  repository: ${GITHUB_REPOSITORY:}
   vault-root: ${VAULT_ROOT:}
 
 management:

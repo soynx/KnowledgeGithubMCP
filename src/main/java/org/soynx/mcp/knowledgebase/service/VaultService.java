@@ -1,10 +1,8 @@
 package org.soynx.mcp.knowledgebase.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,27 +10,56 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Central service for all GitHub API interactions.
+ * Central service for all GitHub API interactions against a single repository.
  * <p>
  * All vault operations (file reads, directory listings, search, tree traversal) go through this
  * class. It is the single point of contact between the MCP tool layer and the GitHub REST API.
  * Errors are caught here and never propagated as exceptions — callers receive {@code null},
  * empty collections, or {@code "ERROR: ..."} strings depending on the method contract.
  * </p>
+ * <p>
+ * Instances are created by {@link VaultServiceFactory} — this class is <em>not</em> a Spring bean.
+ * Multiple instances may exist when multiple repos are configured.
+ * </p>
  */
 @Slf4j
-@Service
-@RequiredArgsConstructor
 public class VaultService {
 
+    /**
+     * -- GETTER --
+     *  Returns the logical key that identifies this repo in multi-repo setups.
+     *
+     * @return repo key, e.g. {@code "vault"}
+     */
+    @Getter
+    private final String repoKey;
     private final GitHub gitHubClient;
+    /**
+     * -- GETTER --
+     *  Returns the underlying
+     *  instance for direct GitHub API access.
+     *
+     * @return the repository client
+     */
+    @Getter
     private final GHRepository repository;
-
-    @Value("${github.vault-root:}")
-    private String vaultRoot;
+    private final String vaultRoot;
 
     /**
-     * Resolves a vault-relative path to the full repository path by prepending {@code VAULT_ROOT}
+     * @param repoKey      logical key identifying this repo, e.g. {@code "vault"} or {@code "repo-1"}
+     * @param gitHubClient authenticated (or anonymous) GitHub API client
+     * @param repository   the connected GitHub repository
+     * @param vaultRoot    optional subfolder path within the repo; blank means repo root
+     */
+    public VaultService(String repoKey, GitHub gitHubClient, GHRepository repository, String vaultRoot) {
+        this.repoKey = repoKey;
+        this.gitHubClient = gitHubClient;
+        this.repository = repository;
+        this.vaultRoot = vaultRoot != null ? vaultRoot : "";
+    }
+
+    /**
+     * Resolves a vault-relative path to the full repository path by prepending {@code vaultRoot}
      * if one is configured.
      *
      * @param path vault-relative path, or {@code null} / blank for the vault root itself
@@ -41,7 +68,7 @@ public class VaultService {
     public String resolvePath(String path) {
         log.trace("[resolvePath] input='{}', vaultRoot='{}'", path, vaultRoot);
         String resolved;
-        if (vaultRoot == null || vaultRoot.isBlank()) {
+        if (vaultRoot.isBlank()) {
             resolved = path == null ? "" : path;
         } else if (path == null || path.isBlank()) {
             resolved = vaultRoot;
@@ -154,37 +181,9 @@ public class VaultService {
     }
 
     /**
-     * Returns the complete file tree of the vault as a compact single-line JSON string.
-     * <p>
-     * Format: {@code {"total": N, "files": ["path/a.md", "path/b.md", ...]}}
-     * </p>
-     *
-     * @return JSON string with total count and sorted file path array, or an {@code "ERROR: ..."} string on failure
-     */
-    public String getFullFileTree() {
-        log.trace("[getFullFileTree] Building full file tree");
-        log.debug("[getFullFileTree] Fetching recursive file tree for repo '{}'", repository.getFullName());
-        List<String> paths = getAllFilePaths();
-        if (paths.isEmpty()) {
-            log.warn("[getFullFileTree] getAllFilePaths returned empty list");
-            return "ERROR: Could not retrieve file tree or vault is empty.";
-        }
-        log.info("[getFullFileTree] Building JSON for {} file(s)", paths.size());
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\"total\":").append(paths.size()).append(",\"files\":[");
-        for (int i = 0; i < paths.size(); i++) {
-            sb.append("\"").append(paths.get(i).replace("\"", "\\\"")).append("\"");
-            if (i < paths.size() - 1) sb.append(",");
-        }
-        sb.append("]}");
-        log.debug("[getFullFileTree] JSON built ({} chars)", sb.length());
-        return sb.toString();
-    }
-
-    /**
      * Returns a sorted list of all vault-relative file paths by traversing the repository's git tree.
      * <p>
-     * Only blob (file) entries are included — directories are not listed. The {@code VAULT_ROOT}
+     * Only blob (file) entries are included — directories are not listed. The {@code vaultRoot}
      * prefix is stripped from all paths so callers always work with vault-relative values.
      * </p>
      *
@@ -195,8 +194,7 @@ public class VaultService {
         log.debug("[getAllFilePaths] Calling getTreeRecursive HEAD");
         try {
             GHTree tree = repository.getTreeRecursive("HEAD", 1);
-            String prefix = (vaultRoot != null && !vaultRoot.isBlank())
-                    ? vaultRoot.stripTrailing() + "/" : "";
+            String prefix = vaultRoot.isBlank() ? "" : vaultRoot.stripTrailing() + "/";
             log.trace("[getAllFilePaths] vaultRoot prefix='{}'", prefix);
             List<String> paths = tree.getTree().stream()
                     .filter(e -> "blob".equals(e.getType()))
@@ -215,15 +213,6 @@ public class VaultService {
     }
 
     /**
-     * Returns the underlying {@link GHRepository} instance for direct GitHub API access.
-     *
-     * @return the repository client
-     */
-    public GHRepository getRepository() {
-        return repository;
-    }
-
-    /**
      * Builds a human-readable error string from an {@link IOException}, with special handling for
      * GitHub API rate limit errors.
      *
@@ -231,7 +220,7 @@ public class VaultService {
      * @param action description of the action that failed, used in the error message
      * @return a plain-text error string prefixed with {@code "ERROR: "}
      */
-    private String buildIoError(IOException e, String action) {
+    public String buildIoError(IOException e, String action) {
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
         if (message.contains("rate limit")) {
             log.warn("[buildIoError] Rate limit detected while trying to {}", action);
