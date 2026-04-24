@@ -16,11 +16,6 @@ KnowledgeGithubMCP is a self-hosted [Model Context Protocol](https://modelcontex
 It is designed for developers and knowledge workers who store notes, documentation, or research in GitHub repositories (such as Obsidian vaults) and want their AI agent to read, search, and navigate that content — with zero infrastructure beyond a single Docker container.
 
 No vector databases. No embedding pipelines. No data leaves your infrastructure unless you choose it to.
-
-> [!IMPORTANT]
-> **Connection Warning in Claude can be safely ignored.**
-> When first connecting to Claude, you may see a "Couldn't connect" warning. The server works regardless. This is a known display issue with the Streamable HTTP transport implementation — a fix is in progress.
-
 ---
 
 ## Key Features
