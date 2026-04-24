@@ -25,5 +25,5 @@ management:
 
 logging:
   level:
-    org.soynx.mcp: INFO
+    org.soynx.mcp.knowledgebase: INFO
     org.kohsuke.github: WARN

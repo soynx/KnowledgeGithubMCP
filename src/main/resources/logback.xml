@@ -29,7 +29,7 @@
     </appender>
 
     <!-- Application code: uses the configured LOG_LEVEL (TRACE / DEBUG / INFO / WARN / ERROR) -->
-    <logger name="org.soynx.mcp" level="${LOG_LEVEL}" additivity="false">
+    <logger name="org.soynx.mcp.knowledgebase" level="${LOG_LEVEL}" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
