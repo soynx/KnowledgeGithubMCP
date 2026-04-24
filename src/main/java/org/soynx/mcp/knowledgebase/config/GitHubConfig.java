@@ -1,4 +1,4 @@
-package org.soynx.mcp.config;
+package org.soynx.mcp.knowledgebase.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRepository;

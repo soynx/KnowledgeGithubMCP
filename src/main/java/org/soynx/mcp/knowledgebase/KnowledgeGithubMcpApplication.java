@@ -1,4 +1,4 @@
-package org.soynx.mcp;
+package org.soynx.mcp.knowledgebase;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

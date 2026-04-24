@@ -1,4 +1,4 @@
-package org.soynx.mcp.config;
+package org.soynx.mcp.knowledgebase.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.server.McpServer;
@@ -6,9 +6,9 @@ import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.WebMvcStreamableServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.soynx.mcp.tools.VaultBrowserTool;
-import org.soynx.mcp.tools.VaultGraphTool;
-import org.soynx.mcp.tools.VaultSearchTool;
+import org.soynx.mcp.knowledgebase.tools.VaultBrowserTool;
+import org.soynx.mcp.knowledgebase.tools.VaultGraphTool;
+import org.soynx.mcp.knowledgebase.tools.VaultSearchTool;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Value;

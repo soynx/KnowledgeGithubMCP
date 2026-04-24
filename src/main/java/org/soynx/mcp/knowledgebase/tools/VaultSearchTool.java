@@ -1,10 +1,10 @@
-package org.soynx.mcp.tools;
+package org.soynx.mcp.knowledgebase.tools;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.PagedSearchIterable;
-import org.soynx.mcp.service.VaultService;
+import org.soynx.mcp.knowledgebase.service.VaultService;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Service;

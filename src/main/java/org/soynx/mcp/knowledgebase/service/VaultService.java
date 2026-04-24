@@ -1,4 +1,4 @@
-package org.soynx.mcp.service;
+package org.soynx.mcp.knowledgebase.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
