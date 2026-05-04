@@ -3,7 +3,7 @@ spring:
     mcp:
       server:
         name: KnowledgeGithubMCP
-        version: 2.0.0
+        version: 2.0.1
   autoconfigure:
     exclude:
       - org.springframework.ai.mcp.server.autoconfigure.McpWebMvcServerAutoConfiguration

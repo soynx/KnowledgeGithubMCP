@@ -13,7 +13,7 @@
 
     <groupId>org.soynx.mcp</groupId>
     <artifactId>KnowledgeGithubMCP</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <name>KnowledgeGithubMCP</name>
     <description>KnowledgeGithubMCP — read-only MCP Server exposing one or more GitHub repositories as a knowledge base to Claude</description>
 
