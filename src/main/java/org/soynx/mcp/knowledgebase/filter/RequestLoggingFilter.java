@@ -26,13 +26,23 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         String remote  = request.getRemoteAddr();
         String fullUri = query != null ? uri + "?" + query : uri;
 
-        log.info("[REQUEST]  {} {} (from {})", method, fullUri, remote);
+        boolean isHealthCheck = "/actuator/health".equals(uri);
+
+        if (isHealthCheck) {
+            log.debug("[REQUEST]  {} {} (from {})", method, fullUri, remote);
+        } else {
+            log.info("[REQUEST]  {} {} (from {})", method, fullUri, remote);
+        }
 
         try {
             filterChain.doFilter(request, response);
         } finally {
             long duration = System.currentTimeMillis() - start;
-            log.info("[RESPONSE] {} {} → {} ({}ms)", method, fullUri, response.getStatus(), duration);
+            if (isHealthCheck) {
+                log.debug("[RESPONSE] {} {} → {} ({}ms)", method, fullUri, response.getStatus(), duration);
+            } else {
+                log.info("[RESPONSE] {} {} → {} ({}ms)", method, fullUri, response.getStatus(), duration);
+            }
         }
     }
 }
