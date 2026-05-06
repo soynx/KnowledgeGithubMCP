@@ -9,6 +9,13 @@
 
 ---
 
+## Docker Image
+```bash
+docker pull ghcr.io/soynx/knowledge-github-mcp:latest
+```
+
+---
+
 ## What It Does
 
 KnowledgeGithubMCP is a self-hosted [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that exposes any GitHub repository as a structured, queryable knowledge base to LLMs like Claude.
